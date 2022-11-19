@@ -15,7 +15,7 @@ Steps are:
 ## DEMO
 [http://goo.gl/ZIWfHz]
 
-[!](https://netplayer.gr/images/webdev/model_screen.png)
+![](https://netplayer.gr/images/webdev/model_screen.png)
 ## PLUGIN (STILL UNDER DEVELOPMENT)
 CropPhotoUpload Plugin 
 
