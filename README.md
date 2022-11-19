@@ -1,4 +1,4 @@
-#CropPhotoUpload
+# CropPhotoUpload
 
 An older and obviously outdated project that's open-sourced now.
 
@@ -15,6 +15,7 @@ Steps are:
 ## DEMO
 [http://goo.gl/ZIWfHz]
 
+[!](https://netplayer.gr/images/webdev/model_screen.png)
 ## PLUGIN (STILL UNDER DEVELOPMENT)
 CropPhotoUpload Plugin 
 
