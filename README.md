@@ -1,10 +1,10 @@
-CropPhotoUpload
+#CropPhotoUpload
 
 An older and obviously outdated project that's open-sourced now.
 
 It is an experimental project containing some years value of dealing with Bezier curves and tangent lines ( https://en.wikipedia.org/wiki/B%C3%A9zier_curve) 
 
-WHAT IT DOES
+## WHAT IT DOES
 Crops a (face usually) image in the shape user defines using a number of points on top of the uploaded image.
 Steps are:
 1. Upload a face image
@@ -12,10 +12,10 @@ Steps are:
 3. Crop (result is saved inside /upload dir.
 
 
-DEMO
+## DEMO
 [http://goo.gl/ZIWfHz]
 
-PLUGIN (STILL UNDER DEVELOPMENT)
+## PLUGIN (STILL UNDER DEVELOPMENT)
 CropPhotoUpload Plugin 
 
 Installation:
