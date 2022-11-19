@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<!--
+@author:netplayer@netplayer.gr
+-->
+
+<html>
+    <head>
+        <title>Personalized Book</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <link href="css/bootstrap.css" rel="stylesheet">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+         
+        
+    </head>
+    <body>
+  
+        <img  id="mask" src="img/mask.png" style="display:none;"/>
+                 <div class="container">
+                    
+              <div class="jumbotron">
+                  
+                  <table><tr>
+                          <th> <img class="step-active" src="img/step1.png" id="step1"/> </th>
+                       <th> <img class="step-inactive" src="img/step2.png" id="step2"/> </th>
+                       <th>  <img class="step-inactive" src="img/step3.png" id="step3"/> </th>
+                        <th>  <img class="step-inactive" src="img/step4.png" id="step4"/> </th>
+                      
+                        </tr> </table>
+                    <div id="border-div" style="border-style:  solid;border-color: #c67605;border-width: 2px;border-radius: 15px;overflow:hidden;width:900px; height:550px;display:block;" >
+                            <table style="width:900px;"><tr><td style="width:400px;height:480px;overflow:hidden;">
+                           
+                           <div class="face"> <div id="canvaswrapper" style="width:400px;height:480px;overflow:hidden;"><canvas id="facecanvas"   style="z-index:1000000;position:absolute;"  width="400" height="480"></canvas></div> <img id="faceimg" src="" style="display:none;"/></div>
+                             <span class="mask"><canvas id="maskcanvas"  width="400" height="480"></canvas></span>
+                             
+                            
+                                    </td>
+                                    <td  style="text-align: center;vertical-align:  middle;width:450px;">
+                         
+                            
+                            <div class="hints" style="background-image:url(img/hints1.png)" ><input id="uploader" type="file" style="position:absolute;margin-top:290px;margin-left:170px;color:#fff;z-index:100;"/></div>
+                            <div class="tools" > <div style="margin-top:120px;margin-left:70px;z-index:200;width:300px;"><center><span>Zoom</span></center> <div id="zoom" style="z-index:9999;"></div></div>
+                              <div style="margin-top:160px;margin-left:70px;z-index:200;width:300px"><center>Rotate</center><div id="rotate" ></div></div></div>
+                                    </td></tr>
+                                <tr>
+                                 
+                                        
+                                        
+                                          
+                                <tr><td style="text-align: center;vertical-align:  middle;width:450px;"><span style="position:absolute;"><a href="javascript:void(0);" id="prev" >PREVIOUS</a></span></td><td style="text-align: center;vertical-align:  middle;width:450px;"><span style="position:absolute;"><a href="javascript:void(0);" id="next">NEXT</a></span></td></tr>
+               
+                                  
+                                    
+                                    
+                                    
+                               
+                            </table>
+                         </div>
+                
+                 </div>
+                  
+                     <canvas id="copycanvas"></canvas>
+        </div>
+         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
+       
+
+         <script type="text/javascript" src="js/all.js"></script>
+     <script type="text/javascript" src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+<!--      <script type="text/javascript" src="js/photocrop.js"></script>-->
+        <script type="text/javascript">
+            
+            //initialize image canvas
+           // $(document).ready(function(){
+                
+                
+                
+                
+                var next = 0;//current step
+                var points = [];//holds the mousedown points
+                function Fcanvas(c) {
+             return  new fabric.Canvas(c);
+         }
+                
+            var facecanvas=Fcanvas("facecanvas");
+            
+    	
+      
+       
+       
+         fabric.Image.fromURL('img/mask1.png', function(oImg) {
+                                         oImg.id='facemask',
+                                         //oImg.width = 130,
+                                         //oImg.height =130,
+                                         oImg.left =0,
+                                         oImg.top = 0,
+                                         oImg.hasBorders=false,
+                                         oImg.lockMovementX =true,
+                                         oImg.lockMovementY =true,
+                                         oImg.lockScalingX = true,
+                                        oImg.lockScalingY= true,
+                                        oImg.lockRotation= true,
+                                         facecanvas.add(oImg); 
+                                        
+                                         facecanvas.renderAll();
+                                         
+                             });
+                     
+               function handleImage(e) {//user background from upload
+         
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                
+                    var thisimage = new Image();
+                     //load user face image
+                    thisimage.onload = function() {
+                        
+                        
+                         fabric.Image.fromURL(thisimage.src, function(oImg) {
+                             var offset=$('#maskcanvas').offset();
+                                         oImg.id='faceimage',
+                                         //oImg.width = 130,
+                                         //oImg.height =130,
+                                         oImg.left =205,
+                                         oImg.top = 273,
+                                         oImg.hasBorders=false,
+                                         //oImg.centeredRotation=true,
+                                        // oImg.centeredScaling=true,
+                                        oImg.scaleX=1,
+                                        oImg.scaleY=1,
+                                          oImg.originX='center',
+                                          oImg.originY= 'center',
+                                         oImg.lockMovementX =oImg.lockMovementY = false;
+                                         facecanvas.add(oImg); 
+                                       // facecanvas.setOverlayImage('img/mask.png');
+                                         facecanvas.renderAll();
+                        
+           
+          
+           
+    });
+           
+          
+        
+                    };
+                    thisimage.src = event.target.result;
+                    
+                   
+                };
+                reader.readAsDataURL(e.target.files[0]);
+               
+        facecanvas.setOverlayImage('img/mask.png');
+        facecanvas.controlsAboveOverlay = true;
+                                         facecanvas.renderAll();
+  
+       
+        //show tools 
+
+ $('.hints').hide();
+  $('.tools').show();
+  
+  
+  var cv_obs = facecanvas.getObjects();
+                    for(var i = 0; i < cv_obs.length; i++){
+                      if(cv_obs[i].id == 'facemask'){ facecanvas.remove(cv_obs[i]); }
+                    }          
+  $('#step1').removeClass('step-active');
+  $('#step1').addClass('step-inactive');
+  $('#step2').removeClass('step-inactive');
+  $('#step2').addClass('step-active');
+  next=1;
+  
+            };   
+        
+        var uploader = document.getElementById('uploader');
+           uploader.addEventListener('change', handleImage, false);
+        
+        
+  
+            
+            
+         
+           
+         $("#rotate").slider({
+              
+      value:0,
+      min: -90,
+      max: 90, 
+      step:1,
+            slide: function(event,ui){
+   if(next<2){
+           var val = ui.value;
+         facecanvas.forEachObject(function(obj){
+             if(obj.id=='faceimage'){
+     obj.originX='center',
+       obj.originY= 'center',          
+    obj.setAngle(val).setCoords();
+             }
+  });
+  facecanvas.renderAll();
+            }
+        }
+            });
+            
+            
+              $("#zoom").slider({
+       value: 1,
+    min: 0,
+    max: 2,
+    step: 0.001,
+       slide: function( event, ui ) {
+           if(next<2){     
+   
+           var val = ui.value;
+                  facecanvas.forEachObject(function(obj){
+             if(obj.id=='faceimage'){
+     obj.originX='center',
+       obj.originY= 'center',          
+    obj.scale(val).setCoords();
+             }
+          
+  });
+           
+         facecanvas.renderAll();     
+           
+          // window.console.log(val);
+       // zoomIn(val,facecanvas);
+    }
+       }
+            });
+            
+            
+          
+            
+          $('#next').click(function(){
+              if(next==0){
+                  return false;;
+              }
+             if(next==1){
+                 
+                 $('#step1').removeClass('step-active');
+                 $('#step1').addClass('step-inactive');
+                 $('#step2').removeClass('step-active');
+                 $('#step2').addClass('step-inactive');
+                 $('#step3').removeClass('step-inactive');
+                 $('#step3').addClass('step-active');
+                 next=2;
+               var cv_obs = facecanvas.getObjects();
+                    for(var i = 0; i < cv_obs.length; i++){
+                      if(cv_obs[i].id == 'faceimage'){ cv_obs[i].lockMovementX = cv_obs[i].lockMovementY = true; cv_obs[i].lockScalingX = true;
+cv_obs[i].lockScalingY = true;cv_obs[i].lockRotation = true; }
+                    }          
+                  
+facecanvas.overlayImage = null;
+facecanvas.renderAll.bind(facecanvas);
+
+                     
+              
+              
+              facecanvas.hoverCursor ='default';
+                     var maskoffset=$('#maskcanvas').offset();
+           var maskpoints=[];
+          
+           maskpoints[0]=75+parseFloat(maskoffset.left)+','+(236+parseFloat(maskoffset.top));
+           //maskpoints[1]=77+parseFloat(maskoffset.left)+','+(193+parseFloat(maskoffset.top));
+           maskpoints[1]=82+parseFloat(maskoffset.left)+','+(156+parseFloat(maskoffset.top));
+           //maskpoints[3]=105+parseFloat(maskoffset.left)+','+(127+parseFloat(maskoffset.top));
+           maskpoints[2]=135+parseFloat(maskoffset.left)+','+(108+parseFloat(maskoffset.top));
+          // maskpoints[5]=168+parseFloat(maskoffset.left)+','+(99+parseFloat(maskoffset.top));
+           maskpoints[3]=201+parseFloat(maskoffset.left)+','+(95+parseFloat(maskoffset.top));           
+           //maskpoints[7]=238+parseFloat(maskoffset.left)+','+(104+parseFloat(maskoffset.top));           
+           maskpoints[4]=276+parseFloat(maskoffset.left)+','+(119+parseFloat(maskoffset.top));           
+           //maskpoints[9]=307+parseFloat(maskoffset.left)+','+(149+parseFloat(maskoffset.top));      
+           maskpoints[5]=315+parseFloat(maskoffset.left)+','+(181+parseFloat(maskoffset.top));           
+           //maskpoints[11]=317+parseFloat(maskoffset.left)+','+(220+parseFloat(maskoffset.top));
+           maskpoints[6]=314+parseFloat(maskoffset.left)+','+(254+parseFloat(maskoffset.top));           
+          // maskpoints[13]=312+parseFloat(maskoffset.left)+','+(290+parseFloat(maskoffset.top));           
+           maskpoints[7]=309+parseFloat(maskoffset.left)+','+(335+parseFloat(maskoffset.top));           
+           //maskpoints[15]=298+parseFloat(maskoffset.left)+','+(372+parseFloat(maskoffset.top));
+           maskpoints[8]=274+parseFloat(maskoffset.left)+','+(396+parseFloat(maskoffset.top));           
+           //maskpoints[17]=240+parseFloat(maskoffset.left)+','+(414+parseFloat(maskoffset.top));           
+           maskpoints[9]=195+parseFloat(maskoffset.left)+','+(419+parseFloat(maskoffset.top));
+           //maskpoints[19]=157+parseFloat(maskoffset.left)+','+(414+parseFloat(maskoffset.top));
+           maskpoints[10]=119+parseFloat(maskoffset.left)+','+(396+parseFloat(maskoffset.top));
+           //maskpoints[21]=95+parseFloat(maskoffset.left)+','+(370+parseFloat(maskoffset.top));
+           maskpoints[11]=83+parseFloat(maskoffset.left)+','+(331+parseFloat(maskoffset.top));
+           //maskpoints[23]=77+parseFloat(maskoffset.left)+','+(284+parseFloat(maskoffset.top));
+          
+           
+                     //createPath();
+             
+           function clearPath(){
+var cv_obs = facecanvas.getObjects();
+                    for(var i = 0; i < cv_obs.length; i++){
+                      if(cv_obs[i].id =='facepath'){ 
+                        //window.console.log(obj+' '+i);
+                         cv_obs[i].remove(); /////////////////////////////REMOVES FACEPATH (MASK1)/////////////////////////
+                        
+                      }
+                    }
+                }
+  
+             
+    function createPath(){ 
+         //window.console.log('createPath');
+        clearPath();
+        
+     
+     for(var x=0;x<maskpoints.length;x++){
+         
+         if(x==0){
+         var mystart='M '+maskpoints[x].replace(","," ");
+     }
+     else{
+         var mypoints=mypoints+' L '+maskpoints[x].replace(","," ")
+     }
+         
+     }  
+     
+     
+     var path = new fabric.Path(mystart+mypoints+' z', {
+        fill : '',
+        stroke : 'yellow',
+        selectable : false,
+        id:'facepath',
+        hasBorders:true,
+        originX:'center',
+        originY:'center'
+        
+    });
+
+    
+    var offset=$('#maskcanvas').offset(); 
+    
+  // window.console.log('maskcanvas offset: '+parseFloat(offset.left)+' ' +parseFloat(offset.top));
+     
+    var myLeft=parseFloat(path.left)-parseFloat(offset.left);
+    var myTop=parseFloat(path.top)-parseFloat(offset.top);
+            
+      path.setControlsVisibility({
+    mt: false, 
+    mb: false, 
+    ml: false, 
+    mr: false, 
+    bl:false,
+    br:false,
+    tl:false,
+    tr:false,
+    mtr:false
+    
+});   
+     path.set({ left: myLeft, top: myTop }); 
+     path.lockMovementX = path.lockMovementY = true; path.lockScalingX = true;
+path.lockScalingY = true;path.lockRotation = true; 
+facecanvas.add(path);
+             }
+
+     
+            
+           function createSpots(){
+              // window.console.log('createSpots');
+                $('.spot').each(function(){
+                 $(this).remove();                    
+                    
+                }); 
+                
+                for(var i=0;i< maskpoints.length;i++){
+                    var maskArr=maskpoints[i].split(',');
+                      // window.console.log('maskpoints.length: '+maskpoints.length);
+                    var eX=parseFloat(maskArr[0]);
+                    var eY=parseFloat(maskArr[1]);
+                    
+                    
+                  // var maskoffset=$('#maskcanvas').offset(); 
+                    
+                    
+                    
+                    
+                    
+                    var titleLeft=parseFloat(eX)-parseFloat(maskoffset.left);
+                    var titleTop=parseFloat(eY)-parseFloat(maskoffset.top);
+                    
+                    var pointer = $('<img class="spot"  id="spot'+i+'" title="'+titleLeft+','+titleTop+'" src="img/spot.png"/>').css({
+                            'position': 'absolute',
+                            //'background-color': 'red',
+                            //'width': '7px',
+                            //'height': '7px',
+                             'left': parseFloat(eX)-parseFloat(maskoffset.left),
+                            'top': parseFloat(eY)-parseFloat(maskoffset.top),                           
+                            'z-index':2000000
+
+
+                        }); 
+                        
+                     $('#canvaswrapper').append(pointer);
+                }
+                
+                    $('.spot').draggable({
+                    drag: function( event, ui ) {
+                        
+                  var arrID=$(this).attr('id').replace('spot','') ;
+                  var offset=$(this).offset();
+                  maskpoints[arrID]=offset.left+','+offset.top;
+                  
+                  
+                  createPath();
+                  
+                    },
+                    stop:function(event,ui){
+                        createSpots();
+                         return false; 
+                    }
+                    
+            });
+                 createPath();
+                 $('.spot').css('cursor','pointer');
+                return false;  
+            }      
+            
+  createSpots();
+   
+   
+
+
+  // Some dazzling stuff happens be here
+
+function mouseMove(e){
+    
+    
+               
+            };
+            
+            
+            
+             function doubleClick(e) {
+                    // window.console.log(e.path[0].attributes[0].value);
+                   // window.console.log(e.target);
+                   // window.console.log(e.target.attributes[3].value);
+                  
+                   
+                     if((e.target.attributes[3].value).indexOf("spot")>-1){
+                      
+                         return;
+                    }
+                     var position;
+
+            var pointer = $('<img class="spot"  id="spot'+i+'" title="spot'+i+'" src="img/spot.png"/>').css({
+                            'position': 'absolute',
+                            //'background-color': 'red',
+//                            'width': '7px',
+//                            'height': '7px',
+                            'top': e.pageY,
+                            'left': e.pageX,
+                            'z-index':2000000
+                        });
+                       
+            
+            
+           
+              var closest=  closestPoint(maskpoints,parseFloat(e.pageX),parseFloat(e.pageY));
+               
+            position=closest;
+              maskpoints.splice(position, 0, e.pageX+','+e.pageY);
+               createSpots();
+            };
+            
+            
+            
+            
+            var canvaswrapper=document.getElementById('canvaswrapper');
+            canvaswrapper.addEventListener('dblclick',doubleClick,false);
+         
+                
+  
+      
+      
+      $(document.body).on('dblclick','.spot',function(){
+          //window.console.log('deleting');
+          var indexArr=$(this).attr('id');
+          var index=indexArr.replace('spot','');
+          maskpoints.splice(index,1)
+          $(this).remove();
+          createSpots();
+          
+      });
+      
+      
+      
+               function mouseup(e){
+
+                };
+                
+                
+              }
+              
+              
+              
+              
+              
+              
+            
+              
+          });   
+          
+          
+function closestPoint(arr,ex,ey) {
+    
+   var totalDistance=100000;
+   for(var k=0 ; k< arr.length;k++){
+     
+     var mxArr=arr[k].split(',');  
+     var mx=parseFloat(mxArr[0]);
+     if(ex>mx){
+     var distx=ex-mx;
+ }
+ else{
+     var distx=mx-ex; 
+ }
+     
+     var my=parseFloat(mxArr[1]);
+     if(ey>my){
+     var disty=ey-my;
+ }
+ else{
+     var disty=my-ey; 
+ }
+ 
+ if( Math.sqrt((distx*distx)+(disty*disty))<totalDistance){
+     totalDistance=Math.sqrt((distx*distx)+(disty*disty));
+     
+     var ID=k;
+ }
+        
+   }
+   return ID;
+}
+          
+          
+          
+          
+          
+          
+            $('#prev').click(function(){
+              if(next==0){
+                  return false;;
+              }
+              if(next==1){
+                  next=0;
+                      window.location.reload();
+                    
+              }
+              if(next==2){
+                  //next=1;
+                 window.location.reload(); 
+              }
+              
+          });
+          
+           function getObjIndex(obj){
+      
+       var cv_obs = facecanvas.getObjects();
+                    for(var i = 0; i < cv_obs.length; i++){
+                      if(cv_obs[i].id == obj){ 
+                        //window.console.log(obj+' '+i);
+                          return(i); 
+                          
+                      }
+                    }
+      
+      
+      
+      };  
+            
+   // }); 
+            
+            
+    </script>
+       
+    </body>
+</html>
